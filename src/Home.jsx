@@ -11,43 +11,51 @@ export default function Home({ user }) {
     location2: '',
   });
 
-  const isValidLocation = async (location) => {
-  try {
-    const res = await fetch(
-      `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(location)}&key=${ed4d79f647bb468c88f90543ffa693b1}`
-    );
-
-    if (!res.ok) {
-      console.error('Geocoding API failed with status:', res.status);
-      return false;
-    }
-
-    const data = await res.json();
-    return data?.results?.length > 0;
-  } catch (err) {
-    console.error('Error validating location:', err);
-    return false;
-  }
-};
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const isValidLocation = async (location) => {
+    try {
+      const res = await fetch(
+        `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(location)}&key=ed4d79f647bb468c88f90543ffa693b1`
+      );
+      if (!res.ok) return false;
+
+      const data = await res.json();
+      return data?.results?.length > 0;
+    } catch (err) {
+      console.error('Validation error:', err);
+      return false;
+    }
+  };
+
   const handleSave = async () => {
-    if (!form.name1 || !form.name2 || !form.location1 || !form.location2) {
+    const { name1, name2, location1, location2 } = form;
+
+    if (!name1 || !name2 || !location1 || !location2) {
       alert('Please fill out all fields.');
+      return;
+    }
+
+    const [isValid1, isValid2] = await Promise.all([
+      isValidLocation(location1),
+      isValidLocation(location2),
+    ]);
+
+    if (!isValid1 || !isValid2) {
+      alert('Please enter valid cities (e.g., Dallas, TX or Boston, MA)');
       return;
     }
 
     const { error } = await supabase.from('relationship_info').insert([
       {
         user_id: user.id,
-        name_1: form.name1,
-        name_2: form.name2,
-        location_1: form.location1,
-        location_2: form.location2,
+        name_1: name1,
+        name_2: name2,
+        location_1: location1,
+        location_2: location2,
       },
     ]);
 
@@ -84,14 +92,14 @@ export default function Home({ user }) {
         />
         <input
           name="location1"
-          placeholder="Your location"
+          placeholder="Your location (e.g., Dallas, TX)"
           value={form.location1}
           onChange={handleChange}
           className="w-full px-4 py-2 border rounded"
         />
         <input
           name="location2"
-          placeholder="Partner's location"
+          placeholder="Partner's location (e.g., Boston, MA)"
           value={form.location2}
           onChange={handleChange}
           className="w-full px-4 py-2 border rounded"
