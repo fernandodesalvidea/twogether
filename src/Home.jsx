@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from './supabase';
-import HomeVisual from './HomeVisual'; // ✅ make sure this file exists in src/
+import DistanceVisual from './DistanceVisual';
 
 const API_KEY = 'ed4d79f647bb468c88f90543ffa693b1';
 
@@ -73,20 +73,17 @@ export default function Home({ user }) {
     fetchRelationship();
   }, [user]);
 
-  if (loading)
-    return <div className="text-center text-gray-500">Loading your relationship info...</div>;
-
-  if (!relationship)
-    return <div className="text-center text-red-500">No relationship info found.</div>;
+  if (loading) return <div className="text-center text-gray-500">Loading your relationship info...</div>;
+  if (!relationship) return <div className="text-center text-red-500">No relationship info found.</div>;
 
   return (
-    <HomeVisual
+    <DistanceVisual
       name1={relationship.name_1}
       name2={relationship.name_2}
       loc1={relationship.location_1}
       loc2={relationship.location_2}
-      km={distance?.km}
-      mi={distance?.mi}
+      km={distance?.km || '?'}
+      mi={distance?.mi || '?'}
     />
   );
 }
