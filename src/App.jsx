@@ -5,6 +5,7 @@ import Layout from './Layout'
 import Dashboard from './Dashboard'
 import Profile from './Profile'
 import './index.css'
+import Home from './Home'
 
 import {
   BrowserRouter as Router,
@@ -35,11 +36,12 @@ function App() {
   return (
     <Router>
       <Layout user={session.user}>
-        <Routes>
-          <Route path="/" element={<Dashboard user={session.user} />} />
-          <Route path="/profile" element={<Profile user={session.user} />} />
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
+<Routes>
+  <Route path="/home" element={<Home user={session.user} />} />
+  <Route path="/dashboard" element={<Dashboard user={session.user} />} />
+  <Route path="/profile" element={<Profile user={session.user} />} />
+  <Route path="*" element={<Navigate to="/home" />} />
+</Routes>
       </Layout>
     </Router>
   )

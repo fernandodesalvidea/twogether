@@ -20,11 +20,11 @@ export default function Layout({ children, user }) {
       >
         <button onClick={handleLogout}>Log Out</button>
 
-        <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-          <div style={{ fontWeight: 'bold', fontSize: '1.5rem' }}>
-            TwoDo 💖
-          </div>
-        </Link>
+
+
+<Link to="/" className="text-2xl font-bold flex items-center gap-1">
+  <span>🏠</span> <span>TwoDo</span> <span>💖</span>
+</Link>
 
         <Link to="/profile">
           <button>Profile</button>
