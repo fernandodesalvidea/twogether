@@ -5,7 +5,11 @@ export default {
   ],
   darkMode: 'class', // <-- enable dark mode support
   theme: {
-    extend: {},
+    extend: {
+  animation: {
+    'pulse-slow': 'pulse 6s ease-in-out infinite',
+  },
+},
   },
   plugins: [],
 }

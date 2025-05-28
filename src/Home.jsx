@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { supabase } from './supabase';
+import HomeVisual from './HomeVisual'; // ✅ make sure this file exists in src/
 
-const API_KEY = 'ed4d79f647bb468c88f90543ffa693b1'; // replace with your actual key
+const API_KEY = 'ed4d79f647bb468c88f90543ffa693b1';
 
 export default function Home({ user }) {
   const [relationship, setRelationship] = useState(null);
   const [distance, setDistance] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Convert location to lat/lng
   const fetchCoords = async (location) => {
     const res = await fetch(
       `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(location)}&key=${API_KEY}`
@@ -17,9 +17,8 @@ export default function Home({ user }) {
     return data?.results?.[0]?.geometry;
   };
 
-  // Calculate haversine distance
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371; // Earth's radius in km
+    const R = 6371;
     const toRad = (deg) => deg * (Math.PI / 180);
     const dLat = toRad(lat2 - lat1);
     const dLon = toRad(lon2 - lon1);
@@ -74,21 +73,20 @@ export default function Home({ user }) {
     fetchRelationship();
   }, [user]);
 
-  if (loading) return <div className="text-center text-gray-500">Loading your relationship info...</div>;
-  if (!relationship) return <div className="text-center text-red-500">No relationship info found.</div>;
+  if (loading)
+    return <div className="text-center text-gray-500">Loading your relationship info...</div>;
+
+  if (!relationship)
+    return <div className="text-center text-red-500">No relationship info found.</div>;
 
   return (
-    <div className="text-center">
-      <h1 className="text-3xl font-bold mb-4">Welcome back, {relationship.name_1} </h1>
-      <p>You and {relationship.name_2} are doing amazing 🌍</p>
-      <p>
-        From <strong>{relationship.location_1}</strong> to <strong>{relationship.location_2}</strong>
-      </p>
-      {distance && (
-        <div className="mt-4 text-xl">
-          📍 You're <strong>{distance.km} km</strong> (<strong>{distance.mi} mi</strong>) apart.
-        </div>
-      )}
-    </div>
+    <HomeVisual
+      name1={relationship.name_1}
+      name2={relationship.name_2}
+      loc1={relationship.location_1}
+      loc2={relationship.location_2}
+      km={distance?.km}
+      mi={distance?.mi}
+    />
   );
 }
