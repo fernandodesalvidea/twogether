@@ -2,8 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from './supabase';
 
-const API_KEY = 'ed4d79f647bb468c88f90543ffa693b1'; // Replace this with your actual OpenCage key
-
 export default function Home({ user }) {
   const navigate = useNavigate();
   const [form, setForm] = useState({
@@ -13,50 +11,47 @@ export default function Home({ user }) {
     location2: '',
   });
 
-  const [suggestions1, setSuggestions1] = useState([]);
-  const [suggestions2, setSuggestions2] = useState([]);
-
- 
-const fetchSuggestions = async (query, setSuggestions) => {
-  if (!query) {
-    setSuggestions([]);
-    return;
-  }
-
-  try {
-    const res = await fetch(
-      `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
-        query
-      )}&key=${API_KEY}&limit=5`
-    );
-    const data = await res.json();
-    const results = data.results.map((result) => result.formatted);
-    setSuggestions(results);
-  } catch (err) {
-    console.error('Error fetching suggestions:', err);
-  }
-};
+  const [suggestions, setSuggestions] = useState([]);
+  const [activeField, setActiveField] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
-
-    if (name === 'location1') fetchSuggestions(value, setSuggestions1);
-    if (name === 'location2') fetchSuggestions(value, setSuggestions2);
   };
 
-  const selectSuggestion = (locationKey, suggestion) => {
-    setForm((prev) => ({ ...prev, [locationKey]: suggestion }));
-    if (locationKey === 'location1') setSuggestions1([]);
-    if (locationKey === 'location2') setSuggestions2([]);
+  const handleLocationInput = async (e, field) => {
+    const query = e.target.value;
+    handleChange(e);
+    setActiveField(field);
+
+    if (query.length < 2) {
+      setSuggestions([]);
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
+          query
+        )}&key=ed4d79f647bb468c88f90543ffa693b1&limit=5`
+      );
+      const data = await res.json();
+      const cityResults = data.results.map((result) => result.formatted);
+      setSuggestions(cityResults);
+    } catch (err) {
+      console.error('Autocomplete error:', err);
+      setSuggestions([]);
+    }
   };
 
-  
+  const handleSuggestionClick = (suggestion, field) => {
+    setForm((prev) => ({ ...prev, [field]: suggestion }));
+    setSuggestions([]);
+    setActiveField(null);
+  };
 
   const handleSave = async () => {
-    const { name1, name2, location1, location2 } = form;
-
-    if (!name1 || !name2 || !location1 || !location2) {
+    if (!form.name1 || !form.name2 || !form.location1 || !form.location2) {
       alert('Please fill out all fields.');
       return;
     }
@@ -64,10 +59,10 @@ const fetchSuggestions = async (query, setSuggestions) => {
     const { error } = await supabase.from('relationship_info').insert([
       {
         user_id: user.id,
-        name_1: name1,
-        name_2: name2,
-        location_1: location1,
-        location_2: location2,
+        name_1: form.name1,
+        name_2: form.name2,
+        location_1: form.location1,
+        location_2: form.location2,
       },
     ]);
 
@@ -87,61 +82,66 @@ const fetchSuggestions = async (query, setSuggestions) => {
       <p className="mb-6 text-gray-600 dark:text-gray-300">
         Let's personalize your experience.
       </p>
-
       <div className="space-y-4">
         <input
           name="name1"
           placeholder="Your name"
           value={form.name1}
           onChange={handleChange}
-          className="w-full px-4 py-2 border rounded"
+          className="w-full px-4 py-2 border rounded bg-slate-100"
         />
         <input
           name="name2"
           placeholder="Partner's name"
           value={form.name2}
           onChange={handleChange}
-          className="w-full px-4 py-2 border rounded"
+          className="w-full px-4 py-2 border rounded bg-slate-100"
         />
+
+        {/* Location 1 autocomplete */}
         <div className="relative">
           <input
             name="location1"
             placeholder="Your location"
             value={form.location1}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border rounded"
+            onChange={(e) => handleLocationInput(e, 'location1')}
+            className="w-full px-4 py-2 border rounded bg-slate-100"
           />
-          {suggestions1.length > 0 && (
-            <ul className="absolute z-10 w-full bg-white dark:bg-gray-700 border rounded shadow mt-1 max-h-40 overflow-y-auto">
-              {suggestions1.map((sugg, i) => (
+          {activeField === 'location1' && suggestions.length > 0 && (
+            <ul className="absolute z-10 mt-1 w-full border bg-white dark:bg-slate-800 rounded shadow max-h-60 overflow-y-auto transition-all duration-200 ease-out">
+              {suggestions.map((suggestion, index) => (
                 <li
-                  key={i}
-                  onClick={() => selectSuggestion('location1', sugg)}
-                  className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer"
+                  key={index}
+                  onClick={() => handleSuggestionClick(suggestion, 'location1')}
+                  className="flex items-center gap-2 px-4 py-2 cursor-pointer hover:bg-purple-100 dark:hover:bg-slate-700 transition-colors duration-150"
                 >
-                  {sugg}
+                  <span className="text-purple-500">📍</span>
+                  <span>{suggestion}</span>
                 </li>
               ))}
             </ul>
           )}
         </div>
+
+        {/* Location 2 autocomplete */}
         <div className="relative">
           <input
             name="location2"
             placeholder="Partner's location"
             value={form.location2}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border rounded"
+            onChange={(e) => handleLocationInput(e, 'location2')}
+            className="w-full px-4 py-2 border rounded bg-slate-100"
           />
-          {suggestions2.length > 0 && (
-            <ul className="absolute z-10 w-full bg-white dark:bg-gray-700 border rounded shadow mt-1 max-h-40 overflow-y-auto">
-              {suggestions2.map((sugg, i) => (
+          {activeField === 'location2' && suggestions.length > 0 && (
+            <ul className="absolute z-10 mt-1 w-full border bg-white dark:bg-slate-800 rounded shadow max-h-60 overflow-y-auto transition-all duration-200 ease-out">
+              {suggestions.map((suggestion, index) => (
                 <li
-                  key={i}
-                  onClick={() => selectSuggestion('location2', sugg)}
-                  className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer"
+                  key={index}
+                  onClick={() => handleSuggestionClick(suggestion, 'location2')}
+                  className="flex items-center gap-2 px-4 py-2 cursor-pointer hover:bg-purple-100 dark:hover:bg-slate-700 transition-colors duration-150"
                 >
-                  {sugg}
+                  <span className="text-purple-500">📍</span>
+                  <span>{suggestion}</span>
                 </li>
               ))}
             </ul>
