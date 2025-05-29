@@ -102,11 +102,11 @@ export default function Home({ user }) {
           💬 Messages
         </Link>
         <Link
-          to="/visits"
-          className="flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-pink-100 hover:bg-pink-200 text-pink-900 font-medium transition-all hover:scale-105"
-        >
-          ✈️ Visits
-        </Link>
+  to="/plan"
+  className="flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-pink-100 hover:bg-pink-200 text-pink-900 font-medium transition-all hover:scale-105"
+>
+  ✈️ Visits
+</Link>
         <Link
           to="/map"
           className="flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-green-100 hover:bg-green-200 text-green-900 font-medium transition-all hover:scale-105"
