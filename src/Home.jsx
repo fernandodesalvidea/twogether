@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from './supabase';
 import DistanceVisual from './DistanceVisual';
+import { Link } from 'react-router-dom';
 
 const API_KEY = 'ed4d79f647bb468c88f90543ffa693b1';
 
@@ -88,30 +89,30 @@ export default function Home({ user }) {
       />
 
       <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md w-full">
-        <a
-          href="/dashboard"
-          className="block rounded-lg px-6 py-4 bg-purple-100 text-purple-800 hover:bg-purple-200 transition text-center font-medium shadow"
+        <Link
+          to="/dashboard"
+          className="flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-900 font-medium transition-all hover:scale-105"
         >
           📝 Our Notes
-        </a>
-        <a
-          href="/map"
-          className="block rounded-lg px-6 py-4 bg-blue-100 text-blue-800 hover:bg-blue-200 transition text-center font-medium shadow"
+        </Link>
+        <Link
+          to="/messages"
+          className="flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-blue-100 hover:bg-blue-200 text-blue-900 font-medium transition-all hover:scale-105"
         >
-          Messages
-        </a>
-        <a
-          href="/dashboard"
-          className="block rounded-lg px-6 py-4 bg-purple-100 text-purple-800 hover:bg-purple-200 transition text-center font-medium shadow"
+          💬 Messages
+        </Link>
+        <Link
+          to="/visits"
+          className="flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-pink-100 hover:bg-pink-200 text-pink-900 font-medium transition-all hover:scale-105"
         >
-          Visits
-        </a>
-        <a
-          href="/map"
-          className="block rounded-lg px-6 py-4 bg-blue-100 text-blue-800 hover:bg-blue-200 transition text-center font-medium shadow"
+          ✈️ Visits
+        </Link>
+        <Link
+          to="/map"
+          className="flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-green-100 hover:bg-green-200 text-green-900 font-medium transition-all hover:scale-105"
         >
           🗺️ View Map
-        </a>
+        </Link>
       </div>
     </div>
   );
