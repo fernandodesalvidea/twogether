@@ -77,13 +77,42 @@ export default function Home({ user }) {
   if (!relationship) return <div className="text-center text-red-500">No relationship info found.</div>;
 
   return (
-    <DistanceVisual
-      name1={relationship.name_1}
-      name2={relationship.name_2}
-      loc1={relationship.location_1}
-      loc2={relationship.location_2}
-      km={distance?.km || '?'}
-      mi={distance?.mi || '?'}
-    />
+    <div className="flex flex-col items-center px-4">
+      <DistanceVisual
+        name1={relationship.name_1}
+        name2={relationship.name_2}
+        loc1={relationship.location_1}
+        loc2={relationship.location_2}
+        km={distance?.km || '?'}
+        mi={distance?.mi || '?'}
+      />
+
+      <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md w-full">
+        <a
+          href="/dashboard"
+          className="block rounded-lg px-6 py-4 bg-purple-100 text-purple-800 hover:bg-purple-200 transition text-center font-medium shadow"
+        >
+          📝 Our Notes
+        </a>
+        <a
+          href="/map"
+          className="block rounded-lg px-6 py-4 bg-blue-100 text-blue-800 hover:bg-blue-200 transition text-center font-medium shadow"
+        >
+          Messages
+        </a>
+        <a
+          href="/dashboard"
+          className="block rounded-lg px-6 py-4 bg-purple-100 text-purple-800 hover:bg-purple-200 transition text-center font-medium shadow"
+        >
+          Visits
+        </a>
+        <a
+          href="/map"
+          className="block rounded-lg px-6 py-4 bg-blue-100 text-blue-800 hover:bg-blue-200 transition text-center font-medium shadow"
+        >
+          🗺️ View Map
+        </a>
+      </div>
+    </div>
   );
 }
