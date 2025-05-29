@@ -42,7 +42,7 @@ function App() {
           <Route path="/profile" element={<Profile user={session} />} />
           <Route path="/setup" element={<Setup user={session} />} />
           <Route path="/map" element={<MapPage user={session} />} />
-          <Route path="/plan" element={<VisitPlanner />} />
+          <Route path="/plan" element={<VisitPlanner user={session} />} />
           {/* Catch-all route to redirect to home */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
