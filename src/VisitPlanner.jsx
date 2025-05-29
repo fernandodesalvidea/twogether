@@ -2,15 +2,17 @@ import { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './CustomCalendar.css';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from './supabase';
+import toast from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
 
 export default function VisitPlanner({ user }) {
   const [date, setDate] = useState(new Date());
   const [plan, setPlan] = useState('');
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState('');
   const [visits, setVisits] = useState([]);
+  const [selectedVisits, setSelectedVisits] = useState([]);
 
   const fetchVisits = async () => {
     const { data, error } = await supabase
@@ -26,24 +28,29 @@ export default function VisitPlanner({ user }) {
     fetchVisits();
   }, [user]);
 
+  useEffect(() => {
+    const matches = visits.filter(
+      (v) => new Date(v.visit_date).toDateString() === date.toDateString()
+    );
+    setSelectedVisits(matches);
+  }, [date, visits]);
+
   const handleSave = async () => {
     setSaving(true);
-    setMessage('');
-
     const { error } = await supabase.from('visits').insert([
       {
         user_id: user.id,
         visit_date: date.toISOString().slice(0, 10),
-        plan: plan,
+        plan,
         cancel_requested: false,
       },
     ]);
 
     if (error) {
       console.error('Error saving visit:', error);
-      setMessage('❌ Failed to save. Please try again.');
+      toast.error('Failed to save visit.');
     } else {
-      setMessage('✅ Visit saved!');
+      toast.success('Visit saved!');
       setPlan('');
       fetchVisits();
     }
@@ -51,25 +58,21 @@ export default function VisitPlanner({ user }) {
     setSaving(false);
   };
 
-  const handleCancelRequest = async (visitId) => {
+  const handleCancelRequest = async (id) => {
     const { error } = await supabase
       .from('visits')
       .delete()
-      .eq('id', visitId)
+      .eq('id', id)
       .eq('user_id', user.id);
 
     if (error) {
       console.error('Error deleting visit:', error);
-      setMessage('❌ Failed to delete visit. Try again.');
+      toast.error('Failed to cancel visit.');
     } else {
-      setMessage('✅ Visit cancelled.');
+      toast.success('Visit cancelled.');
       fetchVisits();
     }
   };
-
-  const visitsOnSelectedDate = visits.filter(
-    (v) => new Date(v.visit_date).toDateString() === date.toDateString()
-  );
 
   return (
     <motion.div
@@ -81,7 +84,6 @@ export default function VisitPlanner({ user }) {
       <h2 className="text-3xl font-bold text-center mb-6 text-slate-800 dark:text-white">
         📅 Plan Your Next Visit
       </h2>
-
       <p className="text-center text-slate-600 dark:text-slate-300 mb-4">
         Choose a date to look forward to!
       </p>
@@ -94,7 +96,8 @@ export default function VisitPlanner({ user }) {
           tileClassName={({ date: tileDate }) =>
             visits.some(
               (v) =>
-                new Date(v.visit_date).toDateString() === tileDate.toDateString()
+                new Date(v.visit_date).toDateString() ===
+                tileDate.toDateString()
             )
               ? 'react-calendar__tile--has-visit'
               : null
@@ -102,55 +105,54 @@ export default function VisitPlanner({ user }) {
         />
       </div>
 
-      {visitsOnSelectedDate.length > 0 ? (
-        <div className="mb-4 p-4 bg-purple-100 dark:bg-purple-900 rounded-xl">
-          <h3 className="font-semibold text-lg mb-2">🎉 Visit Plan(s):</h3>
-          <ul className="list-disc list-inside">
-            {visitsOnSelectedDate.map((visit) => (
-              <li key={visit.id} className="mb-1">
-                {visit.plan}
-                {visit.cancel_requested ? (
-                  <span className="text-sm text-red-500 ml-2">(Cancel requested)</span>
-                ) : (
-        <button
-        onClick={() => handleCancelRequest(visit.id)}
-        className="ml-4 px-3 py-1 rounded-full text-sm bg-red-100 text-red-600 hover:bg-red-200 font-semibold transition-all"
-        >
-        Cancel
-        </button>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : (
-        <>
-          <input
-            type="text"
-            placeholder="What's the plan? ✈️"
-            value={plan}
-            onChange={(e) => setPlan(e.target.value)}
-            className="w-full p-3 rounded-lg border border-slate-300 dark:border-slate-600 mb-3"
-          />
-
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="w-full py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+      <AnimatePresence>
+        {selectedVisits.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className="mb-4 p-4 bg-purple-100 dark:bg-purple-900 rounded-xl"
           >
-            {saving ? 'Saving...' : 'Save Visit'}
-          </button>
-        </>
-      )}
+            <h3 className="font-semibold text-lg mb-3">🎉 Visit Plan(s):</h3>
+            <ul className="space-y-2">
+              {selectedVisits.map((visit) => (
+                <li
+                  key={visit.id}
+                  className="flex justify-between items-center text-slate-800 dark:text-white"
+                >
+                  <span className="ml-2">• {visit.plan}</span>
+                  <button
+                    onClick={() => handleCancelRequest(visit.id)}
+                    className="text-red-500 hover:underline text-sm bg-white dark:bg-slate-700 px-2 py-1 rounded-md border border-red-200"
+                  >
+                    Cancel
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {message && (
-        <p className="mt-3 text-center text-sm text-red-500 dark:text-red-400">
-          {message}
-        </p>
-      )}
+      <input
+        type="text"
+        placeholder="What's the plan? ✈️"
+        value={plan}
+        onChange={(e) => setPlan(e.target.value)}
+        className="w-full p-3 rounded-lg border border-slate-300 dark:border-slate-600 mb-3"
+      />
+
+      <button
+        onClick={handleSave}
+        disabled={saving}
+        className="w-full py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+      >
+        {saving ? 'Saving...' : 'Save Visit'}
+      </button>
 
       <div className="mt-6 text-center text-lg text-slate-700 dark:text-slate-200">
-        Selected date: <span className="font-semibold">{date.toDateString()}</span>
+        Selected date:{' '}
+        <span className="font-semibold">{date.toDateString()}</span>
       </div>
     </motion.div>
   );
