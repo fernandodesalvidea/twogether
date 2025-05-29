@@ -11,9 +11,7 @@ export default function VisitPlanner({ user }) {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [visits, setVisits] = useState([]);
-  const [selectedVisit, setSelectedVisit] = useState(null);
 
-  // ✅ Make this reusable across functions
   const fetchVisits = async () => {
     const { data, error } = await supabase
       .from('visits')
@@ -27,13 +25,6 @@ export default function VisitPlanner({ user }) {
   useEffect(() => {
     fetchVisits();
   }, [user]);
-
-  useEffect(() => {
-    const match = visits.find(
-      (v) => new Date(v.visit_date).toDateString() === date.toDateString()
-    );
-    setSelectedVisit(match || null);
-  }, [date, visits]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -60,13 +51,11 @@ export default function VisitPlanner({ user }) {
     setSaving(false);
   };
 
-  const handleCancelRequest = async () => {
-    if (!selectedVisit) return;
-
+  const handleCancelRequest = async (visitId) => {
     const { error } = await supabase
       .from('visits')
       .delete()
-      .eq('id', selectedVisit.id)
+      .eq('id', visitId)
       .eq('user_id', user.id);
 
     if (error) {
@@ -74,10 +63,13 @@ export default function VisitPlanner({ user }) {
       setMessage('❌ Failed to delete visit. Try again.');
     } else {
       setMessage('✅ Visit cancelled.');
-      setSelectedVisit(null);
-      fetchVisits(); // ✅ works now
+      fetchVisits();
     }
   };
+
+  const visitsOnSelectedDate = visits.filter(
+    (v) => new Date(v.visit_date).toDateString() === date.toDateString()
+  );
 
   return (
     <motion.div
@@ -110,20 +102,26 @@ export default function VisitPlanner({ user }) {
         />
       </div>
 
-      {selectedVisit ? (
+      {visitsOnSelectedDate.length > 0 ? (
         <div className="mb-4 p-4 bg-purple-100 dark:bg-purple-900 rounded-xl">
-          <h3 className="font-semibold text-lg mb-2">🎉 Visit Plan:</h3>
-          <p>{selectedVisit.plan}</p>
-          {selectedVisit.cancel_requested ? (
-            <p className="text-sm text-red-500 mt-2">Cancel request pending</p>
-          ) : (
-            <button
-              onClick={handleCancelRequest}
-              className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-            >
-              Request Cancel
-            </button>
-          )}
+          <h3 className="font-semibold text-lg mb-2">🎉 Visit Plan(s):</h3>
+          <ul className="list-disc list-inside">
+            {visitsOnSelectedDate.map((visit) => (
+              <li key={visit.id} className="mb-1">
+                {visit.plan}
+                {visit.cancel_requested ? (
+                  <span className="text-sm text-red-500 ml-2">(Cancel requested)</span>
+                ) : (
+                  <button
+                    onClick={() => handleCancelRequest(visit.id)}
+                    className="ml-3 text-sm text-red-600 underline hover:text-red-800"
+                  >
+                    Cancel
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
         </div>
       ) : (
         <>
