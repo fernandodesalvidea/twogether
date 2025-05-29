@@ -8,7 +8,7 @@ export default function Layout({ user, children }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white to-slate-100 dark:from-slate-900 dark:to-slate-800 text-slate-900 dark:text-white">
+    <div className="min-h-screen w-screen bg-gradient-to-br from-white to-slate-100 dark:from-slate-900 dark:to-slate-800 text-slate-900 dark:text-white">
       <header className="flex justify-between items-center px-6 py-4 border-b border-slate-300 dark:border-slate-700">
         <button
           onClick={handleLogout}
@@ -40,7 +40,6 @@ export default function Layout({ user, children }) {
           </Link>
         </div>
       </header>
-
       <main className="px-6 py-8">{children}</main>
     </div>
   );
