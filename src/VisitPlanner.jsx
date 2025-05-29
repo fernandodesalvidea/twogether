@@ -59,7 +59,7 @@ export default function VisitPlanner({ user }) {
 
       <input
         type="text"
-        placeholder="What's the plan? ✈️"
+        placeholder="What's the plan?"
         value={plan}
         onChange={(e) => setPlan(e.target.value)}
         className="w-full p-3 rounded-lg border border-slate-300 dark:border-slate-600 mb-3"

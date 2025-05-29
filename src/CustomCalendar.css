@@ -45,3 +45,10 @@
   background-color: #a78bfa !important; /* richer purple on hover */
   transform: scale(1.05);
 }
+
+.highlight-visit {
+  background-color: #fcd34d !important; /* amber highlight */
+  color: #1f2937 !important; /* slate-800 */
+  font-weight: bold;
+  border-radius: 0.5rem;
+}

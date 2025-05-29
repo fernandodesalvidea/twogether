@@ -9,6 +9,7 @@ export default function Home({ user }) {
   const [relationship, setRelationship] = useState(null);
   const [distance, setDistance] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [nextVisit, setNextVisit] = useState(null);
 
   const fetchCoords = async (location) => {
     const res = await fetch(
@@ -74,8 +75,30 @@ export default function Home({ user }) {
     fetchRelationship();
   }, [user]);
 
+  useEffect(() => {
+    const fetchVisit = async () => {
+      const { data, error } = await supabase
+        .from('visits')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('visit_date', { ascending: true })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error fetching visit:', error);
+      } else {
+        setNextVisit(data);
+      }
+    };
+
+    fetchVisit();
+  }, [user]);
+
   if (loading) return <div className="text-center text-gray-500">Loading your relationship info...</div>;
   if (!relationship) return <div className="text-center text-red-500">No relationship info found.</div>;
+
+  const daysLeft = nextVisit ? Math.ceil((new Date(nextVisit.visit_date) - new Date()) / (1000 * 60 * 60 * 24)) : null;
 
   return (
     <div className="flex flex-col items-center px-4">
@@ -87,6 +110,20 @@ export default function Home({ user }) {
         km={distance?.km || '?'}
         mi={distance?.mi || '?'}
       />
+
+      {nextVisit ? (
+        <div className="mt-8 bg-purple-50 dark:bg-purple-900 text-purple-800 dark:text-white p-4 rounded-xl shadow text-center transition-all">
+          <p className="text-lg font-semibold">🗓️ Next Visit: {new Date(nextVisit.visit_date).toDateString()}</p>
+          <p className="text-md italic mt-1">“{nextVisit.plan}”</p>
+          <p className="mt-2 font-bold text-pink-600">
+            💞 {daysLeft} days left!
+          </p>
+        </div>
+      ) : (
+        <div className="mt-8 text-gray-500 dark:text-gray-300 text-center italic">
+          😢 You have no visits planned yet. Start one on the <Link to="/plan" className="underline text-purple-600">Visit Planner</Link>!
+        </div>
+      )}
 
       <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md w-full">
         <Link
@@ -102,11 +139,11 @@ export default function Home({ user }) {
           💬 Messages
         </Link>
         <Link
-  to="/plan"
-  className="flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-pink-100 hover:bg-pink-200 text-pink-900 font-medium transition-all hover:scale-105"
->
-  ✈️ Visits
-</Link>
+          to="/plan"
+          className="flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-pink-100 hover:bg-pink-200 text-pink-900 font-medium transition-all hover:scale-105"
+        >
+          ✈️ Visits
+        </Link>
         <Link
           to="/map"
           className="flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-green-100 hover:bg-green-200 text-green-900 font-medium transition-all hover:scale-105"
