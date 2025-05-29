@@ -7,6 +7,7 @@ import Dashboard from './Dashboard';
 import Profile from './Profile';
 import Home from './Home';
 import Setup from './Setup';
+import MapPage from './MapPage';
 
 function App() {
   const [session, setSession] = useState(null);
@@ -39,6 +40,8 @@ function App() {
           <Route path="/dashboard" element={<Dashboard user={session} />} />
           <Route path="/profile" element={<Profile user={session} />} />
           <Route path="/setup" element={<Setup user={session} />} />
+          <Route path="/map" element={<MapPage user={session} />} />
+          {/* Catch-all route to redirect to home */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Layout>
