@@ -112,12 +112,12 @@ export default function VisitPlanner({ user }) {
                 {visit.cancel_requested ? (
                   <span className="text-sm text-red-500 ml-2">(Cancel requested)</span>
                 ) : (
-                  <button
-                    onClick={() => handleCancelRequest(visit.id)}
-                    className="ml-3 text-sm text-red-600 underline hover:text-red-800"
-                  >
-                    Cancel
-                  </button>
+        <button
+        onClick={() => handleCancelRequest(visit.id)}
+        className="ml-4 px-3 py-1 rounded-full text-sm bg-red-100 text-red-600 hover:bg-red-200 font-semibold transition-all"
+        >
+        Cancel
+        </button>
                 )}
               </li>
             ))}
