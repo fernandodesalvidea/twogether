@@ -133,12 +133,6 @@ export default function Home({ user }) {
           📝 Our Notes
         </Link>
         <Link
-          to="/messages"
-          className="flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-blue-100 hover:bg-blue-200 text-blue-900 font-medium transition-all hover:scale-105"
-        >
-          💬 Messages
-        </Link>
-        <Link
           to="/plan"
           className="flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-pink-100 hover:bg-pink-200 text-pink-900 font-medium transition-all hover:scale-105"
         >
@@ -150,6 +144,12 @@ export default function Home({ user }) {
         >
           🗺️ View Map
         </Link>
+        <Link
+    to="/setup"
+    className="flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-blue-100 hover:bg-blue-200 text-blue-900 font-medium transition-all hover:scale-105"
+  >
+    📍 Update Location
+  </Link>
       </div>
     </div>
   );

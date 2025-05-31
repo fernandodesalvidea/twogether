@@ -32,12 +32,6 @@ export default function Layout({ user, children }) {
             Profile
           </Link>
 
-          <Link
-            to="/setup"
-            className="px-4 py-2 bg-blue-100 dark:bg-slate-700 text-blue-800 dark:text-white rounded hover:bg-blue-200 dark:hover:bg-slate-600 transition"
-          >
-            Setup
-          </Link>
         </div>
       </header>
       <main className="px-6 py-8">{children}</main>
