@@ -11,7 +11,7 @@ export default function Layout({ user, children }) {
     <div className="min-h-screen w-screen bg-gradient-to-br from-white to-slate-100 dark:from-slate-900 dark:to-slate-800 text-slate-900 dark:text-white">
       <header className="flex flex-wrap sm:flex-nowrap justify-between items-center px-6 py-4 border-b border-slate-300 dark:border-slate-700 shadow-sm">
         <div className="mb-2 sm:mb-0 text-lg font-semibold text-purple-700 dark:text-purple-300">
-          TwoDo
+          Twogether
         </div>
 
         <div className="flex flex-wrap gap-2 justify-center sm:justify-end w-full sm:w-auto">
