@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { supabase } from './supabase';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
+
+
 import Landing from './Landing';
 import Auth from './Auth';
 import Layout from './Layout';
@@ -11,6 +13,7 @@ import Home from './Home';
 import Setup from './Setup';
 import MapPage from './MapPage';
 import VisitPlanner from './VisitPlanner';
+import ResetPassword from './ResetPassword';
 
 function App() {
   const [session, setSession] = useState(null);
@@ -60,6 +63,7 @@ function App() {
                   <Route path="/map" element={<MapPage user={session} />} />
                   <Route path="/plan" element={<VisitPlanner user={session} />} />
                   <Route path="*" element={<Navigate to="/" />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
                 </Routes>
               </Layout>
             }

@@ -2,60 +2,40 @@ import { useState } from 'react';
 import { supabase } from './supabase';
 
 export default function Profile({ user }) {
-  const [name, setName] = useState(user.user_metadata?.name || '');
-  const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
 
-  const handleSave = async () => {
-    setSaving(true);
-    setMessage('');
+  const handleResetPassword = async () => {
+  const redirectUrl =
+    window.location.hostname === 'localhost'
+      ? 'http://localhost:5173/reset-password'
+      : 'https://twogether.vercel.app/reset-password';
 
-    const { error } = await supabase.auth.updateUser({
-      data: { name }
-    });
+  const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
+    redirectTo: redirectUrl,
+  });
 
-    if (error) {
-      setMessage('❌ Failed to update.');
-    } else {
-      setMessage('✅ Profile updated!');
-    }
-
-    setSaving(false);
-  };
+  if (error) {
+    setMessage('❌ Failed to send reset email. Try again.');
+  } else {
+    setMessage('✅ Password reset email sent!');
+  }
+};
 
   return (
-    <div className="max-w-xl mx-auto mt-10 bg-white dark:bg-slate-800 p-6 rounded-xl shadow-lg">
-      <h2 className="text-2xl font-bold mb-6 text-slate-800 dark:text-white">My Profile</h2>
+    <div className="max-w-xl mx-auto mt-10 p-6 bg-white dark:bg-slate-800 shadow-xl rounded-xl text-slate-800 dark:text-white">
+      <h2 className="text-2xl font-bold mb-4">My Profile</h2>
+      <p className="mb-2"><strong>Email:</strong> {user.email}</p>
 
-      <div className="mb-4">
-        <label className="block mb-1 font-medium text-slate-700 dark:text-slate-300">Email</label>
-        <input
-          type="email"
-          value={user.email}
-          disabled
-          className="w-full px-4 py-2 rounded border border-slate-300 dark:border-slate-600 bg-gray-100 dark:bg-slate-700 text-slate-800 dark:text-white"
-        />
+      <div className="mt-6">
+        <h3 className="font-semibold mb-2">Reset Password</h3>
+        <button
+          onClick={handleResetPassword}
+          className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition"
+        >
+          Send Reset Email
+        </button>
+        {message && <p className="mt-2 text-sm">{message}</p>}
       </div>
-
-      <div className="mb-6">
-        <label className="block mb-1 font-medium text-slate-700 dark:text-slate-300">Name</label>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full px-4 py-2 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white"
-        />
-      </div>
-
-      <button
-        onClick={handleSave}
-        disabled={saving}
-        className="w-full py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
-      >
-        {saving ? 'Saving...' : 'Save Changes'}
-      </button>
-
-      {message && <p className="mt-4 text-center text-sm text-red-500 dark:text-red-400">{message}</p>}
     </div>
   );
 }
