@@ -95,7 +95,10 @@ export default function Home({ user }) {
     fetchVisit();
   }, [user]);
 
-  if (loading) return <div className="text-center text-gray-500">Loading your relationship info...</div>;
+  if (loading) return <div className="fixed inset-0 flex items-center justify-center bg-white/80 dark:bg-slate-900/80 z-50">
+  <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-purple-500"></div>
+</div>
+   
   if (!relationship) return <div className="text-center text-red-500">No relationship info found.</div>;
 
   const daysLeft = nextVisit ? Math.ceil((new Date(nextVisit.visit_date) - new Date()) / (1000 * 60 * 60 * 24)) : null;

@@ -9,32 +9,38 @@ export default function Layout({ user, children }) {
 
   return (
     <div className="min-h-screen w-screen bg-gradient-to-br from-white to-slate-100 dark:from-slate-900 dark:to-slate-800 text-slate-900 dark:text-white">
-      <header className="flex justify-between items-center px-6 py-4 border-b border-slate-300 dark:border-slate-700">
-        <button
-          onClick={handleLogout}
-          className="px-4 py-2 bg-gray-100 dark:bg-slate-700 rounded hover:bg-gray-200 dark:hover:bg-slate-600"
-        >
-          Log Out
-        </button>
+      <header className="flex flex-wrap sm:flex-nowrap justify-between items-center px-6 py-4 border-b border-slate-300 dark:border-slate-700 shadow-sm">
+        <div className="mb-2 sm:mb-0 text-lg font-semibold text-purple-700 dark:text-purple-300">
+          TwoDo
+        </div>
 
-        <div className="flex gap-2 items-center">
+        <div className="flex flex-wrap gap-2 justify-center sm:justify-end w-full sm:w-auto">
           <Link
             to="/"
-            className="px-4 py-2 bg-green-100 dark:bg-slate-700 text-green-800 dark:text-white rounded hover:bg-green-200 dark:hover:bg-slate-600 transition flex items-center gap-1"
+            className="px-4 py-2 bg-purple-100 dark:bg-purple-800 text-purple-900 dark:text-white rounded-lg hover:bg-purple-200 dark:hover:bg-purple-700 transition font-medium"
           >
-            <span role="img" aria-label="home">🏡</span> Home
+            Home
           </Link>
 
           <Link
             to="/profile"
-            className="px-4 py-2 bg-purple-100 dark:bg-slate-700 text-purple-800 dark:text-white rounded hover:bg-purple-200 dark:hover:bg-slate-600 transition"
+            className="px-4 py-2 bg-purple-100 dark:bg-purple-800 text-purple-900 dark:text-white rounded-lg hover:bg-purple-200 dark:hover:bg-purple-700 transition font-medium"
           >
             Profile
           </Link>
 
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition font-medium"
+          >
+            Log Out
+          </button>
         </div>
       </header>
-      <main className="px-6 py-8">{children}</main>
+
+      <main className="px-6 py-8 flex justify-center">
+        <div className="w-full max-w-3xl">{children}</div>
+      </main>
     </div>
   );
 }
